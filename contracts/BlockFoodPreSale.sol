@@ -1,7 +1,10 @@
 pragma solidity ^0.4.18;
 
+import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 
 contract BlockFoodPreSale {
+
+		using SafeMath for uint;
 
     enum ApplicationState {Unset, Pending, Rejected, Accepted, Refunded}
 
@@ -60,7 +63,7 @@ contract BlockFoodPreSale {
     }
 
     modifier onlyMaxCapNotReached() {
-        require((contributionAccepted + msg.value) <= maxCap);
+        require((contributionAccepted.add(msg.value)) <= maxCap);
         _;
     }
 
@@ -86,13 +89,13 @@ contract BlockFoodPreSale {
     }
 
     modifier onlyNotWithdrawn(uint amount) {
-        require(withdrawn + amount <= contributionAccepted);
+        require(withdrawn.add(amount) <= contributionAccepted);
         _;
     }
 
     modifier onlyFailedPreSale() {
         require(now >= endDate);
-        require(contributionAccepted + contributionPending < minCap);
+        require(contributionAccepted.add(contributionPending) < minCap);
         _;
     }
 
@@ -146,7 +149,7 @@ contract BlockFoodPreSale {
     {
         applications[msg.sender] = Application(msg.value, id, ApplicationState.Pending);
         applicants.push(Applicant(msg.sender, id));
-        contributionPending += msg.value;
+        contributionPending = contributionPending.add(msg.value);
         emit PendingApplication(msg.sender, msg.value, id);
     }
 
@@ -176,8 +179,8 @@ contract BlockFoodPreSale {
         applications[applicant].contribution = 0;
         applicant.transfer(contribution);
 
-        contributionPending -= contribution;
-        contributionRejected += contribution;
+        contributionPending = contributionPending.sub(contribution);
+        contributionRejected = contributionRejected.add(contribution);
 
         emit RejectedApplication(applicant, contribution, applications[applicant].id);
     }
@@ -189,8 +192,8 @@ contract BlockFoodPreSale {
     {
         applications[applicant].state = ApplicationState.Accepted;
 
-        contributionPending -= applications[applicant].contribution;
-        contributionAccepted += applications[applicant].contribution;
+        contributionPending = contributionPending.sub(applications[applicant].contribution);
+        contributionAccepted = contributionAccepted.add(applications[applicant].contribution);
 
         emit AcceptedApplication(applicant, applications[applicant].contribution, applications[applicant].id);
     }
@@ -201,7 +204,7 @@ contract BlockFoodPreSale {
     onlyMinCapReached
     onlyNotWithdrawn(amount)
     {
-        withdrawn += amount;
+        withdrawn = withdrawn.add(amount);
         target.transfer(amount);
         emit Withdrawn(target, amount);
     }
@@ -223,7 +226,7 @@ contract BlockFoodPreSale {
     public
     returns (uint)
     {
-        return maxCap - contributionAccepted;
+        return maxCap.sub(contributionAccepted);
     }
 
     /*
