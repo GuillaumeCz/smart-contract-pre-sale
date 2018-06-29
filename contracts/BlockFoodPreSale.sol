@@ -108,13 +108,13 @@ contract BlockFoodPreSale {
 
     modifier sendContractUpdateEvent() {
         _;
-        ContractUpdate(owner, target, minContribution, minCap, maxCap);
+        emit ContractUpdate(owner, target, minContribution, minCap, maxCap);
     }
 
     /*
         Constructor
     */
-    function BlockFoodPreSale(
+    constructor(
         address target_,
         uint endDate_,
         uint minContribution_,
@@ -147,7 +147,7 @@ contract BlockFoodPreSale {
         applications[msg.sender] = Application(msg.value, id, ApplicationState.Pending);
         applicants.push(Applicant(msg.sender, id));
         contributionPending += msg.value;
-        PendingApplication(msg.sender, msg.value, id);
+        emit PendingApplication(msg.sender, msg.value, id);
     }
 
     function refund()
@@ -157,7 +157,7 @@ contract BlockFoodPreSale {
     {
         applications[msg.sender].state = ApplicationState.Refunded;
         msg.sender.transfer(applications[msg.sender].contribution);
-        Refund(msg.sender, applications[msg.sender].contribution);
+        emit Refund(msg.sender, applications[msg.sender].contribution);
     }
 
     /*
@@ -179,7 +179,7 @@ contract BlockFoodPreSale {
         contributionPending -= contribution;
         contributionRejected += contribution;
 
-        RejectedApplication(applicant, contribution, applications[applicant].id);
+        emit RejectedApplication(applicant, contribution, applications[applicant].id);
     }
 
     function accept(address applicant)
@@ -192,7 +192,7 @@ contract BlockFoodPreSale {
         contributionPending -= applications[applicant].contribution;
         contributionAccepted += applications[applicant].contribution;
 
-        AcceptedApplication(applicant, applications[applicant].contribution, applications[applicant].id);
+        emit AcceptedApplication(applicant, applications[applicant].contribution, applications[applicant].id);
     }
 
     function withdraw(uint amount)
@@ -203,7 +203,7 @@ contract BlockFoodPreSale {
     {
         withdrawn += amount;
         target.transfer(amount);
-        Withdrawn(target, amount);
+        emit Withdrawn(target, amount);
     }
 
     /*
