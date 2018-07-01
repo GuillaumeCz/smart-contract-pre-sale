@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GuillaumeCz/smart-contract-pre-sale.git"
+    "url": "git+https://github.com/BlockFood/smart-contract-pre-sale.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/GuillaumeCz/smart-contract-pre-sale/issues"
+    "url": "https://github.com/BlockFood/smart-contract-pre-sale/issues"
   },
-  "homepage": "https://github.com/GuillaumeCz/smart-contract-pre-sale#readme",
+  "homepage": "https://github.com/BlockFood/smart-contract-pre-sale#readme",
   "dependencies": {
     "zeppelin-solidity": "1.10.0"
   }
