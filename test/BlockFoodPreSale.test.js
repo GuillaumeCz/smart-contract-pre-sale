@@ -588,14 +588,19 @@ contract('BlockFoodPreSale', function (accounts) {
 
                 const { logs } = await instance[functionName](expectedValue, { from: ownerAccount })
 
-                const firstLog = logs[0]
+                const contractUpdateLog = logs.length == 1 ? logs[0] : logs[1];
+                const ownershipTransferredLog = logs.length == 2 ? logs[0] : undefined;
 
-                assert.equal(firstLog.event, 'ContractUpdate')
+                assert.equal(contractUpdateLog.event, 'ContractUpdate');
+
                 if (isNumber) {
-                    assert.equal(firstLog.args[accessorName].toNumber(), expectedValue)
+                    assert.equal(contractUpdateLog.args[accessorName].toNumber(), expectedValue);
                 } else {
-                    assert.equal(firstLog.args[accessorName], expectedValue)
+                    assert.equal(contractUpdateLog.args[accessorName], expectedValue);
                 }
+
+                if (typeof ownershipTransferredLog !== 'undefined') 
+                    assert.equal(ownershipTransferredLog.event, 'OwnershipTransferred');
             })
         }
 

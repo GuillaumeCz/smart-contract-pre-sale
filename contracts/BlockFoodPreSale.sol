@@ -1,8 +1,9 @@
 pragma solidity ^0.4.18;
 
 import 'zeppelin-solidity/contracts/math/SafeMath.sol';
+import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 
-contract BlockFoodPreSale {
+contract BlockFoodPreSale is Ownable {
 
 		using SafeMath for uint;
 
@@ -22,7 +23,6 @@ contract BlockFoodPreSale {
     /*
         Set by constructor
     */
-    address public owner;
     address public target;
     uint public endDate;
     uint public minContribution;
@@ -64,11 +64,6 @@ contract BlockFoodPreSale {
 
     modifier onlyMaxCapNotReached() {
         require((contributionAccepted.add(msg.value)) <= maxCap);
-        _;
-    }
-
-    modifier onlyOwner () {
-        require(msg.sender == owner);
         _;
     }
 
@@ -126,8 +121,6 @@ contract BlockFoodPreSale {
     )
     public
     {
-        owner = msg.sender;
-
         target = target_;
         endDate = endDate_;
         minContribution = minContribution_;
@@ -246,7 +239,7 @@ contract BlockFoodPreSale {
     onlyOwner
     sendContractUpdateEvent
     {
-        owner = owner_;
+        transferOwnership(owner_);
     }
 
     function changeTarget(address target_)
